@@ -22,7 +22,7 @@ services:
       - NODE_ENV=production
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.school.rule=Host(${DOMAIN:-`dorkordi.site`})"
+      - "traefik.http.routers.school.rule=Host('dorkordi.site')"
       - "traefik.http.routers.school.entrypoints=websecure"
       - "traefik.http.routers.school.tls.certresolver=letsencrypt"
       - "traefik.http.services.school.loadbalancer.server.port=3000"
