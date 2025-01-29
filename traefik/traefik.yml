@@ -1,17 +1,25 @@
-# traefik.yml
+# traefik/traefik.yml
 api:
   dashboard: true
-  insecure: true  # Only for development
 
 entryPoints:
   web:
     address: ":80"
-    # Increase timeouts
-    transport:
-      respondingTimeouts:
-        readTimeout: 60s
-        writeTimeout: 60s
-        idleTimeout: 60s
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: your-email@example.com
+      storage: acme.json
+      httpChallenge:
+        entryPoint: web
 
 providers:
   docker:
