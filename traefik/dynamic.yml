@@ -1,0 +1,10 @@
+# dynamic.yml
+http:
+  middlewares:
+    default-timeouts:
+      forwardAuth:
+        address: "http://auth-service"
+        trustForwardHeader: true
+      timeouts:
+        request: 60s
+        idle: 60s

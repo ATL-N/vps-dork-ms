@@ -1,0 +1,22 @@
+# this is online configurations
+api:
+  dashboard: true
+  insecure: true # disable in production
+
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "${LETSENCRYPT_EMAIL}"
+      storage: "/letsencrypt/acme.json"
+      httpChallenge:
+        entryPoint: web

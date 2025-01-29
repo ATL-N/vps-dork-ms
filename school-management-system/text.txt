@@ -1,0 +1,347 @@
+# all design completed 
+## data connected 
+
+
+
+Dashboard
+
+ #   Main Dashboard
+ #   Student Dashboard
+ #   Teacher Dashboard
+ #   Parent Dashboard
+ #   Admin Dashboard
+#
+
+Student Management
+
+  #  Student List
+  #  Add New Student
+    Edit Student
+  #  Student Profile (now including semester remarks)
+  #  Student Attendance Report
+  #  Student Grade Report
+  #  Student Discipline Record
+  #  Student Health Record
+#
+
+Parent/Guardian Management
+
+  #  Parent List
+  #  Add New Parent
+    Edit Parent
+  #  Parent Profile
+  #  Link Parent to Student
+
+#    * parent section merged in the student details part(except for the parent dashbord which was handle in the dashbord section)
+
+
+Teacher Management
+
+  #  Teacher List
+  #  Add New Teacher
+    Edit Teacher
+  #  Teacher Profile
+  #  Teacher Schedule
+  #  Teacher Performance Evaluation
+
+
+subject Management
+
+  #  subject List
+  #  Add New subject
+    Edit subject
+  #  subject Details
+  #  subject Materials
+
+
+Class Management
+
+  #  Class List
+  #  Create New Class
+    Edit Class
+  #  Class Details
+  #  Class Schedule
+  #  Class Roster
+
+
+Enrollment Management
+
+    Enroll Student
+    Class Enrollment List
+    Edit Enrollment
+    Drop Student from Class
+
+
+Grade Management
+
+  #  Enter Grades
+    Edit Grades
+  #  Grade Book
+  #  Generate Report Cards
+  #  Grade Analytics
+
+
+Attendance Management
+
+  #  Take Attendance
+  #  Edit Attendance
+  #  Attendance Report
+  #  Attendance Analytics
+
+
+
+
+Event Management
+
+  #  Event List
+  #  Add New Event
+  #  Edit Event
+  #  Event Details
+  #  Event Calendar
+
+
+
+Reports
+
+  #  Generate Report (with various options, now including semester remarks)
+  #  View Generated Reports
+  #  Export Reports
+
+
+User Management
+
+  #  User List
+  #  Add New User
+  #  Edit User
+  #  User Roles and Permissions
+
+
+Settings
+
+  #  General Settings
+  #  Academic Year Settings
+  #  Grading Scale Settings
+  #  Notification Settings
+  #  System Backup and Restore
+
+
+Login/Logout
+
+  #  Login Page
+  #  Forgot Password
+  #  Reset Password
+  #  Two-Factor Authentication
+
+
+User Profile
+
+  #  View Profile
+  #  Change Password
+  #  Notification Preferences
+
+
+Messaging/Communication/SMS
+
+  #  Inbox
+  #  Compose Message
+  #  View Message
+  #  Broadcast Notifications
+  #  Message Templates
+
+
+Financial Management
+
+  #  Fee Structure
+  #  Generate Invoice
+  #  Record Payment
+  #  Payment History
+  #  Financial Reports
+
+
+Semester Management (New)
+
+    Semester List
+    Add New Semester
+    Edit Semester
+    Semester Details
+    Semester Calendar
+
+
+Student Remarks (New)
+
+  #  Remark List (by semester)
+  #  Add Teacher Remark
+  #  Add Headteacher Remark
+  #  Edit Remarks
+  #  View Student Remarks History
+
+
+############################################################################################
+Department Management
+
+  #  Department List
+  #  Add New Department
+  #  Edit Department
+  #  Department Details
+  #  Assign Department Head
+
+
+Resource Management
+
+    Resource List
+    Add New Resource
+    Edit Resource
+    Resource Allocation
+    Resource Reservation
+
+
+#################################################################################################################################################################
+## how to run a docker project
+1. run 'docker compose build' to build the project
+2. run 'docker compose up' to run the project
+
+
+#################################################################################################################################################################
+## how to  set up my nextjs app on docker
+1. create a dockerfile in the root directory like the one in my project
+2. create a docker compose file like the one in my project.
+3. finally run the docker project (follow the steps above)
+
+
+#################################################################################################################################################################
+## how to share the the docker project with the other devices
+1. # On source machine
+docker save school-management-system-nextjs-atl:latest -o school-app.tar
+
+# On target machine
+docker load -i school-app.tar
+
+2. 
+
+
+
+
+
+############################################################################################################################################
+## how can i share the docker image with the other device without using the docker hub
+
+Sharing Docker images without Docker Hub
+There are several ways to share Docker images without using Docker Hub:
+Export/Import Method (Simple but larger file size)
+
+bashCopy# On source machine
+docker save your-application-name:tag -o your-zip-file-name.tar
+ e.g. docker save school-management-system-nextjs-atl:latest -o school-app.tar
+
+# On target machine
+docker load -i your-zip-file-name.tar
+e.g. docker load -i school-app.tar
+
+#######################################################################
+##required files to copy to the target machine
+Required Files:
+
+Copyyour-project-directory/
+├── docker-compose.yml              # Defines your container setup
+├── school-app-full.tar            # Your exported Docker images
+└── .env.example                   # Template for environment variables (recommended)
+
+### oon the target machine, do the following
+
+
+
+
+############ read me fileInstallation Instructions:
+
+1. Create a new directory and extract the distribution package:
+   mkdir school-app
+   cd school-app
+   tar -xzf school-app-distribution.tar.gz
+
+2. Create .env file from example:
+   cp .env.example .env
+
+3. Edit .env file with your values:
+   # Required environment variables:
+   DB_USER=postgres
+   DB_PASSWORD=your_password
+   DB_NAME=your_database_name
+   NEXTAUTH_SECRET=your_secret
+   NEXTAUTH_URL=http://localhost:3001
+
+4. Load Docker images:
+   docker load -i school-app-full.tar
+
+5. Start the application:
+   docker compose up -d
+
+6. Verify the application is running:
+   docker compose ps
+
+
+
+##############################################
+##############################################
+RECEIVER PROCESS
+##############################################
+##############################################
+The receiver would only need to:
+
+
+### Linux
+Create directory
+Extract the package
+Create and configure their .env file(copy the content of the .env.example in the direcotry)
+Run docker compose
+
+
+### Windows
+
+# 1. Create directory
+mkdir school-app
+cd school-app
+
+# 2. Extract the zip file
+Expand-Archive -Path school-app-distribution.zip -DestinationPath .
+
+# 3. Copy env file
+copy .env.example .env
+
+# 4. Edit .env file (can use notepad)
+notepad .env
+
+# 5. Load images
+docker load -i school-app-full.tar
+
+# 6. Start application
+docker-compose up -d
+
+PowerShell Execution Policy: You might need to allow script execution:
+
+powershellCopy# Run as administrator
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+
+#######################################################################
+#######################################################################
+#######################################################################
+#######################################################################
+automate the installation PROCESS
+#######################################################################
+#######################################################################
+#######################################################################
+pre-requisits
+1. docker
+
+
+create a directory where you want to install the application
+make sure to copy and paste the two files in the created directory 
+a. installation script (install-atl-school-app.sh)
+b. zip file of the program(school-app-distribution.tar.gz)
+
+1. make the install-atl-school-app.sh executable 
+chmod +x install-atl-school-app.sh 
+
+2. run the script passing the school-app-distribution.tar.gz as argument to the script
+./install-atl-school-app.sh ~/Desktop/school-app-distribution.tar.gz 
+
