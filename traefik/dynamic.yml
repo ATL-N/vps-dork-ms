@@ -1,6 +1,6 @@
 http:
   middlewares:
-    securityHeaders:
+    secHeaders:
       headers:
         browserXssFilter: true
         contentTypeNosniff: true
