@@ -4,8 +4,6 @@
 services:
   nextjs:
     image: school-management-system-nextjs-atl:${VERSION:-latest}
-    # ports:
-    #   - '3000:3000'
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,24 +15,15 @@ services:
       - DB_NAME=${DB_NAME:-postgres}
       - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD}@db:5432/${DB_NAME:-postgres}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
-      # - PGSSLMODE=disable
+      - NEXTAUTH_URL=https://${DOMAIN}
       - NODE_ENV=production
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.school.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.school.entrypoints=websecure"
       - "traefik.http.routers.school.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.school.middlewares=secHeaders@file,rateLimit@file"
       - "traefik.http.services.school.loadbalancer.server.port=3000"
-
-      # - "traefik.enable=true"
-      # - "traefik.http.routers.school.rule=Host(`localhost`)"
-      # - "traefik.http.routers.school.entrypoints=web"
-      # - "traefik.http.services.school.loadbalancer.server.port=3000"
-      # # Add error handling middleware
-      # - "traefik.http.routers.school.middlewares=retry@docker"
-      # # Configure retry attempts
-      # - "traefik.http.middlewares.retry.retry.attempts=3"
     depends_on:
       db:
         condition: service_healthy

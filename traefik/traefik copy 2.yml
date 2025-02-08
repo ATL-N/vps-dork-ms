@@ -1,17 +1,28 @@
-# traefik.yml
 api:
   dashboard: true
-  insecure: true  # Only for development
 
 entryPoints:
   web:
     address: ":80"
-    # Increase timeouts
-    transport:
-      respondingTimeouts:
-        readTimeout: 60s
-        writeTimeout: 60s
-        idleTimeout: 60s
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls: {}
+      middlewares:
+        - secureHeaders@file
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: atlcoccus@gmail.com
+      storage: acme.json
+      httpChallenge:
+        entryPoint: web
 
 providers:
   docker:
@@ -19,3 +30,13 @@ providers:
     exposedByDefault: false
     network: web
     watch: true
+
+http:
+  middlewares:
+    secureHeaders:
+      headers:
+        sslRedirect: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000

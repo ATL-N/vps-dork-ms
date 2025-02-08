@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  traefik:
+    image: traefik:v3.10
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./traefik/acme.json:/acme.json
+    networks:
+      - web
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  web:
+    name: web

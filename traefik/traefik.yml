@@ -1,6 +1,10 @@
-# traefik/traefik.yml
 api:
   dashboard: true
+  insecure: false
+
+global:
+  sendAnonymousUsage: false
+  checkNewVersion: false
 
 entryPoints:
   web:
@@ -12,6 +16,11 @@ entryPoints:
           scheme: https
   websecure:
     address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - secHeaders@file
 
 certificatesResolvers:
   letsencrypt:
@@ -26,4 +35,7 @@ providers:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     network: web
+    watch: true
+  file:
+    filename: /etc/traefik/dynamic.yml
     watch: true
