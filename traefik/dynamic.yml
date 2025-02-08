@@ -1,6 +1,6 @@
 http:
   middlewares:
-    secHeaders:
+    securityHeaders:
       headers:
         browserXssFilter: true
         contentTypeNosniff: true
@@ -13,12 +13,10 @@ http:
         customRequestHeaders:
           X-Forwarded-Proto: "https"
 
-    rateLimit:
+    rateLimiter:
       rateLimit:
         average: 100
         burst: 50
 
-    default-timeouts:
-      timeouts:
-        request: 60s
-        idle: 60s
+    compression:
+      compress: {}

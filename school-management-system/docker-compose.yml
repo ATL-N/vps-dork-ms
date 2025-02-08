@@ -22,7 +22,7 @@ services:
       - "traefik.http.routers.school.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.school.entrypoints=websecure"
       - "traefik.http.routers.school.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.school.middlewares=secHeaders@file,rateLimit@file"
+      - "traefik.http.routers.school.middlewares=securityHeaders@file,rateLimiter@file"
       - "traefik.http.services.school.loadbalancer.server.port=3000"
     depends_on:
       db:
