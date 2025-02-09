@@ -1,0 +1,37 @@
+# version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - "--certificatesresolvers.letsencrypt.acme.email=atlcoccus@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./traefik/acme.json:/acme.json
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`dorkordi.site`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.middlewares=secHeaders@file"  # Match the name in dynamic.yml
+      - "traefik.http.middlewares.auth-middleware.basicauth.users=admin:$apr1$XCfqrLp/$Y77cZnivwIWkX2p68u2w4/" # Change this
+
+networks:
+  web:
+    name: web

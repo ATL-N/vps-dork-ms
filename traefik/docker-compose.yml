@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:3.3
+    image: traefik:v3.3
     ports:
       - 80:80 # HTTP port
       - 443:443 # HTTPS port
@@ -13,11 +13,11 @@ services:
 
       # HTTP router configuration
       - traefik.http.routers.traefik-dashboard-http.entrypoints=http
-      - traefik.http.routers.traefik-dashboard-http.rule=Host(`traefik.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.traefik-dashboard-http.rule=Host(`traefik.${TRAEFIK_DASHBOARD_DOMAIN?Variable not set}`)
 
       # HTTPS router configuration
       - traefik.http.routers.traefik-dashboard-https.entrypoints=https
-      - traefik.http.routers.traefik-dashboard-https.rule=Host(`traefik.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.traefik-dashboard-https.rule=Host(`traefik.${TRAEFIK_DASHBOARD_DOMAIN?Variable not set}`)
       - traefik.http.routers.traefik-dashboard-https.tls=true
       - traefik.http.routers.traefik-dashboard-https.tls.certresolver=le
       - traefik.http.routers.traefik-dashboard-https.service=api@internal
@@ -53,10 +53,13 @@ services:
       - --api
     networks:
       - traefik-public # Public network for Traefik and other services
-
+      - web
 volumes:
   traefik-public-certificates: # Persistent volume for certificates
 
 networks:
   traefik-public:
-    external: false # Use pre-existing traefik-public network
+    name: traefik-public
+    # external: false # Use pre-existing traefik-public network
+  web:
+    name: web
