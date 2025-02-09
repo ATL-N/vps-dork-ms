@@ -70,7 +70,5 @@ volumes:
 networks:
   web:
     external: true
-  # app-network:
-  #   driver: bridge
   traefik-public:
     external: true
