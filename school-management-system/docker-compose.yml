@@ -9,10 +9,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${APP_PORT:-3005}:3000"
+    env_file:
+     - .env
     environment:
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - NEXTAUTH_URL=https://${DOMAIN}
       - NODE_ENV=production
+      - DB_HOST=${DB_HOST} # Add this line
     labels:
       - traefik.enable=true
       - traefik.http.routers.dorkms-http.rule=Host(`${DOMAIN}`)
@@ -46,6 +49,7 @@ services:
       - POSTGRES_USER=${DB_USER:-postgres}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME:-postgres}
+      - DB_HOST=${DB_HOST} # Add this line
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
