@@ -103,18 +103,7 @@ const FeedingFeesManagement = () => {
       }
 
       const data = await fetchData(url, "", false);
-      function extractpickupdata(data) {
-        if (data?.length > 0) {
-          return data?.map((item) => {
-            return {
-              id: item.pick_up_id,
-              pick_up_point_name: item.pick_up_point_name,
-              pick_up_price: item.pick_up_price,
-            };
-          });
-        }
-      }
-      setPickUpPoints(extractpickupdata(data));
+      setPickUpPoints(data);
       if (searchQuery1.trim() !== "" && data?.length === 0) {
         setError("No fees found matching your search.");
       } else {
@@ -290,12 +279,12 @@ const FeedingFeesManagement = () => {
           true
         ),
       ]);
-      console.log("pickUpPointData", pickUpPointData, class_id);
+      console.log("pickUpPointData", pickUpPointData);
       setModalContent(
         <Addeditpickup
           setShowModal={setShowModal}
           id={class_id}
-          pickUpPointData={pickUpPointData[0]}
+          pickUpPointData={pickUpPointData}
           onCancel={() => {
             setShowModal(false);
             fetchPickupPoints();
