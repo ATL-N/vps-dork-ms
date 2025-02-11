@@ -41,7 +41,7 @@ const Addeditpickup = ({ id, pickUpPointData, onCancel }) => {
   }, [session]);
 
   useEffect(() => {
-          console.log("initialFormData", pickUpPointData, id);
+    console.log("initialFormData", pickUpPointData, id);
 
     if (id && pickUpPointData) {
       const initialFormData = {
@@ -53,7 +53,7 @@ const Addeditpickup = ({ id, pickUpPointData, onCancel }) => {
       };
       setFormData(initialFormData);
       setOriginalData(initialFormData);
-      console.log('initialFormData', initialFormData, id)
+      console.log("initialFormData", initialFormData, id);
     }
   }, [id, pickUpPointData]);
 
