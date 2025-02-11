@@ -38,7 +38,7 @@ export async function POST(req) {
 
     // If pick up point doesn't exist, proceed with insertion
     const insertQuery = `
-         INSERT INTO bus_pick_up_points (pick_up_point_name, pick_up_price, student_id, status)
+         INSERT INTO bus_pick_up_points (pick_up_point_name, pick_up_price, student_id)
          VALUES ($1, $2, $3, $4)
          RETURNING pick_up_id, pick_up_point_name ;
      `;
@@ -47,7 +47,6 @@ export async function POST(req) {
       pick_up_point_name,
       pick_up_price,
       student_id,
-      status,
     ]);
 
     const new_name = insertResult.rows[0].pick_up_point_name;

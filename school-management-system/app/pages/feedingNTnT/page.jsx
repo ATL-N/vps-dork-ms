@@ -113,6 +113,7 @@ const FeedingFeesManagement = () => {
 
       const data = await fetchData(url, "", false);
       setPickUpPoints(data);
+      console.log('pickUpPoints', data)
       if (searchQuery1.trim() !== "" && data?.length === 0) {
         setError("No fees found matching your search.");
       } else {

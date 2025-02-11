@@ -16,7 +16,6 @@ export async function PUT(req, { params }) {
       pick_up_point_name,
       pick_up_price,
       student_id,
-      status,
       user_id,
     } = body;
 
@@ -72,7 +71,7 @@ export async function PUT(req, { params }) {
     // If checks pass, proceed with the update
     const updateQuery = `
          UPDATE bus_pick_up_points 
-         SET pick_up_point_name = $1, pick_up_price = $2, student_id = $3, status = $4
+         SET pick_up_point_name = $1, pick_up_price = $2, student_id = $3
          WHERE pick_up_id = $5
          RETURNING pick_up_id, pick_up_point_name;
      `;
@@ -80,7 +79,6 @@ export async function PUT(req, { params }) {
       pick_up_point_name,
       pick_up_price,
       student_id,
-      status,
       pick_up_id,
     ]);
     const { pick_up_id: itemId, pick_up_point_name: itemName } =

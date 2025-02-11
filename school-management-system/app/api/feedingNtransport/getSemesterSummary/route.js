@@ -7,7 +7,7 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const semester_id = searchParams.get("semester_id");
-
+console.log('semester_id', semester_id)
     if (!semester_id) {
       return NextResponse.json(
         { error: "Missing required field: semester_id" },
