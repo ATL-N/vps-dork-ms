@@ -13,16 +13,6 @@ import {
   FaEdit,
   FaInfoCircle,
 } from "react-icons/fa";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import StatCard from "../../components/statcard";
 import Modal from "../../components/modal/modal";
 import CustomTable from "../../components/listtableForm";
@@ -35,6 +25,7 @@ import AddEditExpense from "../expenses/addeditexpense/addexpense";
 import ReceiptGenerator from "./feereceipt/feereceipt";
 import { getTodayString } from "../../config/configFile";
 import Addeditpickup from "./pickup/addedit/addeditpickup";
+import DeleteUser from "../../components/deleteuser";
 
 const FeedingFeesManagement = () => {
   const { data: session, status } = useSession();
@@ -112,8 +103,18 @@ const FeedingFeesManagement = () => {
       }
 
       const data = await fetchData(url, "", false);
-      setPickUpPoints(data);
-      console.log('pickUpPoints', data)
+      function extractpickupdata(data) {
+        if (data?.length > 0) {
+          return data?.map((item) => {
+            return {
+              id: item.pick_up_id,
+              pick_up_point_name: item.pick_up_point_name,
+              pick_up_price: item.pick_up_price,
+            };
+          });
+        }
+      }
+      setPickUpPoints(extractpickupdata(data));
       if (searchQuery1.trim() !== "" && data?.length === 0) {
         setError("No fees found matching your search.");
       } else {
@@ -278,6 +279,135 @@ const FeedingFeesManagement = () => {
       setShowModal(true);
     }
     setShowModal(true);
+  };
+
+  const handleEditPickupPoint = async (class_id) => {
+    try {
+      const [pickUpPointData] = await Promise.all([
+        fetchData(
+          `/api/feedingNtransport/pickup/get?id=${class_id}`,
+          "staff",
+          true
+        ),
+      ]);
+      console.log("pickUpPointData", pickUpPointData, class_id);
+      setModalContent(
+        <Addeditpickup
+          setShowModal={setShowModal}
+          id={class_id}
+          pickUpPointData={pickUpPointData[0]}
+          onCancel={() => {
+            setShowModal(false);
+            fetchPickupPoints();
+            fetchPaymentHistory("", activeSemester);
+            // fetchExpenseHistory();
+            fetchFeeStats();
+          }}
+        />
+      );
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setShowModal(true);
+    }
+    setShowModal(true);
+  };
+
+  const handleDeletePickup = async (pick_up_id) => {
+    if (
+      !(
+        session?.user?.role === "admin" ||
+        session?.user?.permissions?.some(
+          (permission) => permission === "delete pick up point" // You might want to change this permission name
+        )
+      )
+    ) {
+      return (
+        <div className="flex items-center">
+          You are not authorized to delete pick-up points
+        </div>
+      );
+    }
+
+    try {
+      setModalContent(
+        <div>
+          <DeleteUser
+            userData={pick_up_id}
+            onClose={() => setShowModal(false)}
+            onDelete={async () => {
+              const toastId = toast.loading("Processing your request...");
+
+              try {
+                const response = await fetch(
+                  `/api/feedingNtransport/pickup/delete/${pick_up_id}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      user_id: session.user.user_id, // Send current user ID for audit
+                    }),
+                  }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                  // Handle associated students error specifically
+                  if (response.status === 409) {
+                    toast.update(toastId, {
+                      render: (
+                        <div>
+                          <p>{data.error}</p>
+                          <p>
+                            Associated students:{" "}
+                            {data.associatedStudents.join(", ")}
+                          </p>
+                        </div>
+                      ),
+                      type: "error",
+                      isLoading: false,
+                      autoClose: 5000,
+                    });
+                    return;
+                  }
+
+                  throw new Error(
+                    data.error || "Failed to delete pick-up point"
+                  );
+                }
+
+                // Refresh pick-up points list after deletion
+                await fetchPickupPoints(); // Update this to your actual data refresh function
+
+                toast.update(toastId, {
+                  render: "Pick-up point deleted successfully",
+                  type: "success",
+                  isLoading: false,
+                  autoClose: 2000,
+                });
+                setShowModal(false);
+              } catch (error) {
+                console.error("Deletion error:", error);
+                toast.update(toastId, {
+                  render:
+                    error.message || "An error occurred. Please try again.",
+                  type: "error",
+                  isLoading: false,
+                  autoClose: 3000,
+                });
+              }
+            }}
+          />
+        </div>
+      );
+    } catch (error) {
+      console.error("Modal setup error:", error);
+    } finally {
+      setShowModal(true);
+    }
   };
 
   const handleAddFee = async (class_id) => {
@@ -828,15 +958,15 @@ const FeedingFeesManagement = () => {
                 headerNames={["ID", "Pick Up Point", "Pick Up Price"]}
                 maxTableHeight="50vh"
                 height="40vh"
-                handleEdit={handleAddFee}
+                handleEdit={handleEditPickupPoint}
                 handleEvaluation={handleFeeHistoryById}
                 handleSearch={handlePickupSearchInputChange}
+                handleDelete={handleDeletePickup}
                 searchTerm={pickUpSearchQuery}
-                editIcon={<FaMoneyBillWave />}
+                // editIcon={<FaMoneyBillWave />}
                 editTitle="Edit pick up details for  "
                 searchPlaceholder="Search by pickup point"
                 displayDetailsBtn={false}
-                displayDelBtn={false}
                 displayEvaluationBtn={false}
                 evalTitle="View payment history for "
                 evaluationIcon={<FaClipboardList />}
@@ -844,6 +974,12 @@ const FeedingFeesManagement = () => {
                   session?.user?.role === "admin" ||
                   session?.user?.permissions?.some(
                     (permission) => permission === "view feeding fee and tnt"
+                  )
+                }
+                displayDelBtn={
+                  session?.user?.role === "admin" ||
+                  session?.user?.permissions?.some(
+                    (permission) => permission === "edit collected fees"
                   )
                 }
               />

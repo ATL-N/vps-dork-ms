@@ -72,7 +72,7 @@ export async function PUT(req, { params }) {
     const updateQuery = `
          UPDATE bus_pick_up_points 
          SET pick_up_point_name = $1, pick_up_price = $2, student_id = $3
-         WHERE pick_up_id = $5
+         WHERE pick_up_id = $4
          RETURNING pick_up_id, pick_up_point_name;
      `;
     const updateResult = await db.query(updateQuery, [

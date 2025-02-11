@@ -12,7 +12,7 @@ const Addeditpickup = ({ id, pickUpPointData, onCancel }) => {
 
   const initialState = {
     pick_up_point_name: "",
-    pick_up_price: '',
+    pick_up_price: "",
     student_id: null, // Assuming you might need student ID later
     // status: "active",
   };
@@ -41,6 +41,8 @@ const Addeditpickup = ({ id, pickUpPointData, onCancel }) => {
   }, [session]);
 
   useEffect(() => {
+          console.log("initialFormData", pickUpPointData, id);
+
     if (id && pickUpPointData) {
       const initialFormData = {
         pick_up_id: id,
@@ -51,6 +53,7 @@ const Addeditpickup = ({ id, pickUpPointData, onCancel }) => {
       };
       setFormData(initialFormData);
       setOriginalData(initialFormData);
+      console.log('initialFormData', initialFormData, id)
     }
   }, [id, pickUpPointData]);
 

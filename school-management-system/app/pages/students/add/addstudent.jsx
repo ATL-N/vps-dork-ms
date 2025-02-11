@@ -28,28 +28,22 @@ const Addnewstudent = ({
     date_of_birth: "",
     gender: "",
     class_id: "",
-    amountowed: '',
+    amountowed: "",
     residential_address: "",
     phone: "",
     email: "",
     enrollment_date: "",
-    national_id: '',
-    birth_cert_id: '',
-
-    // feeding and transport details
+    national_id: "",
+    birth_cert_id: "",
     transportation_method: "",
     pick_up_point: "",
-    feeding_fee: '',
-    transport_fee: '',
-
-    // medical records user_health_record
+    feeding_fee: "",
+    transport_fee: "",
     medical_conditions: "",
     allergies: "",
     blood_group: "",
     vaccination_status: "",
     health_insurance_id: "",
-
-    // parents info/details
     parent1_other_names: "",
     parent1_last_name: "",
     parent1_phone: "",
@@ -57,7 +51,6 @@ const Addnewstudent = ({
     parent1_address: "",
     parent1_relationship: "",
     parent1_selection: "",
-
     parent2_other_names: "",
     parent2_last_name: "",
     parent2_phone: "",
@@ -95,7 +88,6 @@ const Addnewstudent = ({
   useEffect(() => {
     const fetchStaffData = async () => {
       if (id && studentsData) {
-        // console.log("studentsData", studentsData?.parent1.parent_id);
         const initialFormData = {
           ...studentsData,
           student_id: id,
@@ -107,7 +99,6 @@ const Addnewstudent = ({
           parent1_email: studentsData?.parent1?.email,
           parent1_address: studentsData?.parent1?.address,
           parent1_relationship: studentsData?.parent1?.relationship,
-
           parent2_selection: studentsData?.parent2?.parent_id,
           parent2_other_names: studentsData?.parent2?.other_names,
           parent2_last_name: studentsData?.parent2?.last_name,
@@ -150,13 +141,10 @@ const Addnewstudent = ({
         reader.readAsDataURL(file);
       }
     } else if (name === "pick_up_point") {
-      // Find the corresponding pickup point data
       const selectedPickup = pickupData.find(
-        (pickup) => pickup.pick_up_id==value
+        (pickup) => pickup.pick_up_id == value
       );
-      console.log("pick_up_point:", selectedPickup, value, pickupData);
 
-      // Update both pickup point and transport fee
       setFormData((prevState) => ({
         ...prevState,
         pick_up_point: value,
@@ -178,9 +166,36 @@ const Addnewstudent = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log("formData", formData);
-
     setIsModalOpen(true);
+  };
+
+  const processFormData = (data) => {
+    const processedData = { ...data };
+
+    // Fields that should not be processed
+    const excludeFields = [
+      "photo",
+      "date_of_birth",
+      "enrollment_date",
+      "class_id",
+      "amountowed",
+      "feeding_fee",
+      "transport_fee",
+      "pick_up_point",
+      "parent1_selection",
+      "parent2_selection",
+    ];
+
+    Object.keys(processedData).forEach((key) => {
+      if (
+        !excludeFields.includes(key) &&
+        typeof processedData[key] === "string"
+      ) {
+        processedData[key] = processedData[key].trim().toLowerCase();
+      }
+    });
+
+    return processedData;
   };
 
   const handleConfirm = async () => {
@@ -213,7 +228,6 @@ const Addnewstudent = ({
       const imageRef = ref(storage, `images/${imageUpload.name + currentDate}`);
 
       if (originalData?.photo !== formData?.photo) {
-        // console.log("working on image");
         try {
           const snapshot = await uploadBytes(imageRef, imageUpload);
           photoURL = await getDownloadURL(snapshot.ref);
@@ -236,10 +250,11 @@ const Addnewstudent = ({
       }
     }
 
-    const studentsData = {
+    // Process the form data before sending to backend
+    const processedData = processFormData({
       ...formData,
       photo: photoURL,
-    };
+    });
 
     try {
       const url = id ? `/api/students/${id}` : "/api/students/addstudent";
@@ -258,7 +273,7 @@ const Addnewstudent = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(studentsData),
+        body: JSON.stringify(processedData),
       });
 
       const result = await response.json();
@@ -272,11 +287,6 @@ const Addnewstudent = ({
         });
         throw new Error(result.error || "Failed to process request");
       }
-
-      // console.log(
-      //   id ? "students updated successfully:" : "students added successfully:",
-      //   result
-      // );
 
       toast.update(toastId, {
         render: result.message || "Operation completed successfully!",
@@ -306,9 +316,9 @@ const Addnewstudent = ({
     }
   };
 
-   if (isLoading || status==='loading') {
-     return <Loadingpage />;
-   }
+  if (isLoading || status === "loading") {
+    return <Loadingpage />;
+  }
 
   if (!isAuthorised) {
     return (
@@ -317,8 +327,6 @@ const Addnewstudent = ({
       </div>
     );
   }
-
- 
 
   return (
     <>

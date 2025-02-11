@@ -31,7 +31,7 @@ export async function GET(req) {
       // Complete pick up points list
       sqlQuery = `
                 SELECT 
-                     p.pick_up_id,
+                    p.pick_up_id,
                     p.pick_up_point_name,
                     p.pick_up_price
                 FROM 
