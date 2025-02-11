@@ -103,7 +103,18 @@ const FeedingFeesManagement = () => {
       }
 
       const data = await fetchData(url, "", false);
-      setPickUpPoints(data);
+      function extractpickupdata(data) {
+        if (data?.length > 0) {
+          return data?.map((item) => {
+            return {
+              id: item.pick_up_id,
+              pick_up_point_name: item.pick_up_point_name,
+              pick_up_price: item.pick_up_price,
+            };
+          });
+        }
+      }
+      setPickUpPoints(extractpickupdata(data));
       if (searchQuery1.trim() !== "" && data?.length === 0) {
         setError("No fees found matching your search.");
       } else {
@@ -284,7 +295,7 @@ const FeedingFeesManagement = () => {
         <Addeditpickup
           setShowModal={setShowModal}
           id={class_id}
-          pickUpPointData={pickUpPointData}
+          pickUpPointData={pickUpPointData[0]}
           onCancel={() => {
             setShowModal(false);
             fetchPickupPoints();
@@ -631,7 +642,7 @@ const FeedingFeesManagement = () => {
     <>
       <div className="pb-16 text-cyan-600">
         <h1 className="text-3xl font-bold mb-6 text-cyan-700">
-          Feeding And Transport Fee Management nelson3322
+          Feeding And Transport Fee Management
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <StatCard
