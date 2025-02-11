@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.8
--- Dumped by pg_dump version 15.8
+-- Dumped from database version 13.16 (Debian 13.16-1.pgdg120+1)
+-- Dumped by pg_dump version 15.8 (Debian 15.8-0+deb12u1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -119,6 +119,43 @@ ALTER TABLE public.balance_adjustment_log_log_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.balance_adjustment_log_log_id_seq OWNED BY public.balance_adjustment_log.log_id;
+
+
+--
+-- Name: bus_pick_up_points; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bus_pick_up_points (
+    pick_up_id integer NOT NULL,
+    student_id integer,
+    pick_up_point_name character varying(100) NOT NULL,
+    pick_up_price integer,
+    status character varying(10) DEFAULT 'active'::character varying
+);
+
+
+ALTER TABLE public.bus_pick_up_points OWNER TO postgres;
+
+--
+-- Name: bus_pick_up_points_pick_up_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.bus_pick_up_points_pick_up_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bus_pick_up_points_pick_up_id_seq OWNER TO postgres;
+
+--
+-- Name: bus_pick_up_points_pick_up_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.bus_pick_up_points_pick_up_id_seq OWNED BY public.bus_pick_up_points.pick_up_id;
 
 
 --
@@ -472,9 +509,9 @@ ALTER SEQUENCE public.feeding_fee_payments_id_seq OWNED BY public.feeding_fee_pa
 CREATE TABLE public.feeding_transport_fees (
     student_id integer NOT NULL,
     transportation_method character varying(100),
-    pick_up_point character varying(100),
-    feeding_fee numeric(10,2) NOT NULL,
-    transport_fee numeric(10,2) NOT NULL
+    feeding_fee numeric(10,2),
+    transport_fee numeric(10,2),
+    pick_up_point integer
 );
 
 
@@ -1562,6 +1599,13 @@ ALTER TABLE ONLY public.balance_adjustment_log ALTER COLUMN log_id SET DEFAULT n
 
 
 --
+-- Name: bus_pick_up_points pick_up_id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bus_pick_up_points ALTER COLUMN pick_up_id SET DEFAULT nextval('public.bus_pick_up_points_pick_up_id_seq'::regclass);
+
+
+--
 -- Name: class_items class_item_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1786,905 +1830,6 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 
 
 --
--- Data for Name: attendance; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.attendance (attendance_id, student_id, class_id, attendance_date, status, semester_id, staff_id) FROM stdin;
-\.
-
-
---
--- Data for Name: balance_adjustment_log; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.balance_adjustment_log (log_id, student_id, amount_adjusted, reason, adjusted_at) FROM stdin;
-\.
-
-
---
--- Data for Name: class_items; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.class_items (class_item_id, class_id, item_id, semester_id, quantity_per_student, supplied_by, assigned_at, status) FROM stdin;
-\.
-
-
---
--- Data for Name: classes; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.classes (class_id, class_name, class_level, capacity, room_name, staff_id, status, created_at, updated_at) FROM stdin;
-1	completed	completed	\N	\N	\N	active	2025-01-09 00:33:52.623152+00	2025-01-09 00:33:52.623152+00
-13	Nursery 1A	Pre School	30		17	active	2025-01-11 11:12:52.695076+00	2025-01-11 11:12:52.695076+00
-14	Nursery 1B 	Pre School	30		17	active	2025-01-11 11:13:26.879412+00	2025-01-11 11:13:26.879412+00
-15	Nursery 2A	Pre School	30		17	active	2025-01-11 11:14:39.325905+00	2025-01-11 11:14:39.325905+00
-16	Nursery 2B	Pre School	30		17	active	2025-01-11 11:15:01.808226+00	2025-01-11 11:15:01.808226+00
-18	Nursery 2C	Pre School	30		17	active	2025-01-11 11:15:48.435129+00	2025-01-11 11:15:48.435129+00
-17	Nursery 2C 	Pre School	30		17	deleted	2025-01-11 11:15:21.609646+00	2025-01-11 11:15:21.609646+00
-19	KG 1A	Pre School	30		17	active	2025-01-11 11:17:28.50707+00	2025-01-11 11:17:28.50707+00
-20	KG 1B	Pre School	30		17	active	2025-01-11 11:18:02.595046+00	2025-01-11 11:18:02.595046+00
-21	KG 1C	Pre School	30		17	active	2025-01-11 11:18:48.254043+00	2025-01-11 11:18:48.254043+00
-22	KG 2A	Pre School	30		17	active	2025-01-11 11:19:09.971665+00	2025-01-11 11:19:09.971665+00
-23	KG 2B	Pre School	30		17	active	2025-01-11 11:24:24.951992+00	2025-01-11 11:24:24.951992+00
-24	KG 2C 	Pre School	30		17	active	2025-01-11 11:24:58.931507+00	2025-01-11 11:24:58.931507+00
-25	BS 1A	Primary	30		17	active	2025-01-11 11:25:46.230972+00	2025-01-11 11:25:46.230972+00
-27	BS 1C 	Primary	30		17	active	2025-01-11 11:26:50.19139+00	2025-01-11 11:26:50.19139+00
-28	BS 2A 	Primary	30		17	active	2025-01-11 11:27:14.048451+00	2025-01-11 11:27:14.048451+00
-29	BS 2B 	Primary	30		17	active	2025-01-11 11:27:43.766222+00	2025-01-11 11:27:43.766222+00
-30	BS 2C 	Primary	30		17	active	2025-01-11 11:28:10.593273+00	2025-01-11 11:28:10.593273+00
-31	BS 3A 	Primary	30		17	active	2025-01-11 11:28:39.102402+00	2025-01-11 11:28:39.102402+00
-32	BS 3B 	Primary	30		17	active	2025-01-11 11:29:04.23869+00	2025-01-11 11:29:04.23869+00
-33	BS 3C 	Primary	30		17	active	2025-01-11 11:29:26.154957+00	2025-01-11 11:29:26.154957+00
-34	BS 4A 	Primary	30		17	active	2025-01-11 11:29:55.700601+00	2025-01-11 11:29:55.700601+00
-35	BS 4B 	Primary	30		17	active	2025-01-11 11:31:12.416794+00	2025-01-11 11:31:12.416794+00
-36	BS 4C 	Primary	30		17	active	2025-01-11 11:31:45.15778+00	2025-01-11 11:31:45.15778+00
-37	BS 5A 	Primary	30		17	active	2025-01-11 11:32:19.728214+00	2025-01-11 11:32:19.728214+00
-38	BS 5B 	Primary	30		17	active	2025-01-11 11:32:56.959971+00	2025-01-11 11:32:56.959971+00
-39	BS 5C	Primary	30		17	active	2025-01-11 11:33:21.428382+00	2025-01-11 11:33:21.428382+00
-40	BS 6A 	Primary	30		17	active	2025-01-11 11:33:41.230006+00	2025-01-11 11:33:41.230006+00
-41	BS 6B 	Primary	30		17	active	2025-01-11 11:34:02.464148+00	2025-01-11 11:34:02.464148+00
-42	BS 6C 	Primary	30		17	active	2025-01-11 11:34:20.12055+00	2025-01-11 11:34:20.12055+00
-43	BS 7A	Primary	30		17	active	2025-01-11 11:35:29.692474+00	2025-01-11 11:35:29.692474+00
-44	BS 7B 	JHS	30		17	active	2025-01-11 11:36:01.01242+00	2025-01-11 11:36:01.01242+00
-45	BS 8A 	JHS	30		17	active	2025-01-11 11:36:17.47492+00	2025-01-11 11:36:17.47492+00
-46	BS 8B 	JHS	30		17	active	2025-01-11 11:36:34.498241+00	2025-01-11 11:36:34.498241+00
-48	BS 9B 	JHS	30		17	active	2025-01-11 11:37:16.147981+00	2025-01-11 11:37:16.147981+00
-26	BS 1B	Primary	30		19	active	2025-01-11 11:26:02.322704+00	2025-01-11 11:26:02.322704+00
-47	BS 9A	JHS	30		21	active	2025-01-11 11:36:56.158235+00	2025-01-11 11:36:56.158235+00
-\.
-
-
---
--- Data for Name: departments; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.departments (department_id, department_name, head_of_department, description, created_at, updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: evaluations; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.evaluations (evaluation_id, evaluatee_id, evaluation_date, teaching_effectiveness, classroom_management, student_engagement, professionalism, comments, years_of_experience, evaluator_id, created_at, status) FROM stdin;
-\.
-
-
---
--- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.events (event_id, event_title, event_date, start_time, end_time, location, description, event_type, target_audience, created_at, status, user_id, updated_at) FROM stdin;
-\.
-
-
---
--- Data for Name: expenses; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.expenses (expense_id, recipient_name, expense_category, description, amount, expense_date, invoice_number, supplier_id, staff_id, user_id, created_at) FROM stdin;
-\.
-
-
---
--- Data for Name: fee_collections; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.fee_collections (collection_id, student_id, payment_date, amount_received, old_balance, new_balance, fee_type, payment_mode, status, created_at, received_by, comment) FROM stdin;
-\.
-
-
---
--- Data for Name: feeding_fee_payments; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.feeding_fee_payments (id, student_id, class_id, collected_by, feeding_fee, valid_until_feeding, transport_fee, valid_until_transport, total_fee, semester_id, payment_date) FROM stdin;
-\.
-
-
---
--- Data for Name: feeding_transport_fees; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.feeding_transport_fees (student_id, transportation_method, pick_up_point, feeding_fee, transport_fee) FROM stdin;
-7	School Bus	grater grace 	5.00	3.00
-\.
-
-
---
--- Data for Name: grading_scheme; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.grading_scheme (gradescheme_id, grade_name, minimum_mark, maximum_mark, grade_remark, status) FROM stdin;
-3	Grade 1	90.00	100.00	Highest	active
-4	Grade 2 	80.00	89.00	Higher	active
-5	Grade 3	70.00	79.00	High	active
-6	Grade 4	60.00	69.00	High Average	active
-7	Grade 5	55.00	59.00	Average	active
-8	Grade 6	50.00	54.00	Low Average	active
-9	Grade 7	40.00	49.00	Credit	active
-10	Grade 8	35.00	39.00	Pass	active
-11	Grade 9	0.00	34.00	Fail	active
-\.
-
-
---
--- Data for Name: health_incident; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.health_incident (incident_id, incident_date, incident_description, treatmentprovided, user_id) FROM stdin;
-\.
-
-
---
--- Data for Name: inventory_class_semester; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.inventory_class_semester (inventory_id, class_id, semester_id) FROM stdin;
-\.
-
-
---
--- Data for Name: inventory_items; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.inventory_items (inventory_id, inventory_name, unit_price, quantity_per_student, total_price, restock_level, status) FROM stdin;
-\.
-
-
---
--- Data for Name: invoice_class_semester; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.invoice_class_semester (invoice_id, class_id, semester_id) FROM stdin;
-\.
-
-
---
--- Data for Name: invoices; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.invoices (invoice_id, amount, description, created_at, status) FROM stdin;
-\.
-
-
---
--- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.items (item_id, item_name, category, description, unit_price, quantity_desired, quantity_available, restock_level, status) FROM stdin;
-\.
-
-
---
--- Data for Name: items_movement; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.items_movement (supply_id, staff_id, recipient_name, recipient_phone, comments, item_id, quantity, supplied_by, supplied_at, status, movement_type, returned_at) FROM stdin;
-\.
-
-
---
--- Data for Name: items_supply; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.items_supply (supply_id, student_id, item_id, quantity, supplied_by, supplied_at, semester_id, class_id, status) FROM stdin;
-\.
-
-
---
--- Data for Name: notification_recipients; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.notification_recipients (id, notification_id, recipient_id, recipient_type, is_read, read_at) FROM stdin;
-\.
-
-
---
--- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.notifications (notification_id, notification_title, notification_message, notification_type, priority, sender_id, sent_at, is_read, status, created_at) FROM stdin;
-89	New Staff Added	A new staff(Alex) has joined the school.	general	normal	1	2025-01-11 11:08:15.793127	f	active	2025-01-11 11:08:15.793127
-90	New Class Added	A new class "Nursery 1A" has been added to the system.	general	normal	1	2025-01-11 11:12:52.695076	f	active	2025-01-11 11:12:52.695076
-91	New Class Added	A new class "Nursery 1B " has been added to the system.	general	normal	1	2025-01-11 11:13:26.879412	f	active	2025-01-11 11:13:26.879412
-92	New Class Added	A new class "Nursery 2A" has been added to the system.	general	normal	1	2025-01-11 11:14:39.325905	f	active	2025-01-11 11:14:39.325905
-93	New Class Added	A new class "Nursery 2B" has been added to the system.	general	normal	1	2025-01-11 11:15:01.808226	f	active	2025-01-11 11:15:01.808226
-94	New Class Added	A new class "Nursery 2C " has been added to the system.	general	normal	1	2025-01-11 11:15:21.609646	f	active	2025-01-11 11:15:21.609646
-95	New Class Added	A new class "Nursery 2C" has been added to the system.	general	normal	1	2025-01-11 11:15:48.435129	f	active	2025-01-11 11:15:48.435129
-96	Class Removed	Class Nursery 2C  has been removed from the system.	general	normal	1	2025-01-11 11:16:55.349618	f	active	2025-01-11 11:16:55.349618
-97	New Class Added	A new class "KG 1A" has been added to the system.	general	normal	1	2025-01-11 11:17:28.50707	f	active	2025-01-11 11:17:28.50707
-98	New Class Added	A new class "KG 1B" has been added to the system.	general	normal	1	2025-01-11 11:18:02.595046	f	active	2025-01-11 11:18:02.595046
-99	New Class Added	A new class "KG 1C" has been added to the system.	general	normal	1	2025-01-11 11:18:48.254043	f	active	2025-01-11 11:18:48.254043
-100	New Class Added	A new class "KG 2A" has been added to the system.	general	normal	1	2025-01-11 11:19:09.971665	f	active	2025-01-11 11:19:09.971665
-101	New Class Added	A new class "KG 2B" has been added to the system.	general	normal	1	2025-01-11 11:24:24.951992	f	active	2025-01-11 11:24:24.951992
-102	New Class Added	A new class "KG 2C " has been added to the system.	general	normal	1	2025-01-11 11:24:58.931507	f	active	2025-01-11 11:24:58.931507
-103	New Class Added	A new class "BS 1A" has been added to the system.	general	normal	1	2025-01-11 11:25:46.230972	f	active	2025-01-11 11:25:46.230972
-104	New Class Added	A new class "BS 1B" has been added to the system.	general	normal	1	2025-01-11 11:26:02.322704	f	active	2025-01-11 11:26:02.322704
-105	New Class Added	A new class "BS 1C " has been added to the system.	general	normal	1	2025-01-11 11:26:50.19139	f	active	2025-01-11 11:26:50.19139
-106	New Class Added	A new class "BS 2A " has been added to the system.	general	normal	1	2025-01-11 11:27:14.048451	f	active	2025-01-11 11:27:14.048451
-107	New Class Added	A new class "BS 2B " has been added to the system.	general	normal	1	2025-01-11 11:27:43.766222	f	active	2025-01-11 11:27:43.766222
-108	New Class Added	A new class "BS 2C " has been added to the system.	general	normal	1	2025-01-11 11:28:10.593273	f	active	2025-01-11 11:28:10.593273
-109	New Class Added	A new class "BS 3A " has been added to the system.	general	normal	1	2025-01-11 11:28:39.102402	f	active	2025-01-11 11:28:39.102402
-110	New Class Added	A new class "BS 3B " has been added to the system.	general	normal	1	2025-01-11 11:29:04.23869	f	active	2025-01-11 11:29:04.23869
-111	New Class Added	A new class "BS 3C " has been added to the system.	general	normal	1	2025-01-11 11:29:26.154957	f	active	2025-01-11 11:29:26.154957
-112	New Class Added	A new class "BS 4A " has been added to the system.	general	normal	1	2025-01-11 11:29:55.700601	f	active	2025-01-11 11:29:55.700601
-113	New Class Added	A new class "BS 4B " has been added to the system.	general	normal	1	2025-01-11 11:31:12.416794	f	active	2025-01-11 11:31:12.416794
-114	New Class Added	A new class "BS 4C " has been added to the system.	general	normal	1	2025-01-11 11:31:45.15778	f	active	2025-01-11 11:31:45.15778
-115	New Class Added	A new class "BS 5A " has been added to the system.	general	normal	1	2025-01-11 11:32:19.728214	f	active	2025-01-11 11:32:19.728214
-116	New Class Added	A new class "BS 5B " has been added to the system.	general	normal	1	2025-01-11 11:32:56.959971	f	active	2025-01-11 11:32:56.959971
-117	New Class Added	A new class "BS 5C" has been added to the system.	general	normal	1	2025-01-11 11:33:21.428382	f	active	2025-01-11 11:33:21.428382
-118	New Class Added	A new class "BS 6A " has been added to the system.	general	normal	1	2025-01-11 11:33:41.230006	f	active	2025-01-11 11:33:41.230006
-119	New Class Added	A new class "BS 6B " has been added to the system.	general	normal	1	2025-01-11 11:34:02.464148	f	active	2025-01-11 11:34:02.464148
-120	New Class Added	A new class "BS 6C " has been added to the system.	general	normal	1	2025-01-11 11:34:20.12055	f	active	2025-01-11 11:34:20.12055
-121	New Class Added	A new class "BS 7A" has been added to the system.	general	normal	1	2025-01-11 11:35:29.692474	f	active	2025-01-11 11:35:29.692474
-122	New Class Added	A new class "BS 7B " has been added to the system.	general	normal	1	2025-01-11 11:36:01.01242	f	active	2025-01-11 11:36:01.01242
-123	New Class Added	A new class "BS 8A " has been added to the system.	general	normal	1	2025-01-11 11:36:17.47492	f	active	2025-01-11 11:36:17.47492
-124	New Class Added	A new class "BS 8B " has been added to the system.	general	normal	1	2025-01-11 11:36:34.498241	f	active	2025-01-11 11:36:34.498241
-125	New Class Added	A new class "BS 9A" has been added to the system.	general	normal	1	2025-01-11 11:36:56.158235	f	active	2025-01-11 11:36:56.158235
-126	New Class Added	A new class "BS 9B " has been added to the system.	general	normal	1	2025-01-11 11:37:16.147981	f	active	2025-01-11 11:37:16.147981
-127	New Student Registration	A new student Christiana  Acquah has been registered with ID: 7	student	normal	51	2025-01-11 12:12:25.451746	f	active	2025-01-11 12:12:25.451746
-128	New Staff Added	A new staff(Obed) has joined the school.	general	normal	1	2025-01-13 15:37:06.315031	f	active	2025-01-13 15:37:06.315031
-129	New Staff Added	A new staff(Veronica) has joined the school.	general	normal	54	2025-01-13 16:03:02.988544	f	active	2025-01-13 16:03:02.988544
-130	New Staff Added	A new staff(Isaac) has joined the school.	general	normal	54	2025-01-13 16:16:54.040653	f	active	2025-01-13 16:16:54.040653
-131	New Staff Added	A new staff(Isaac) has joined the school.	general	normal	54	2025-01-13 16:22:15.40596	f	active	2025-01-13 16:22:15.40596
-\.
-
-
---
--- Data for Name: parents; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.parents (parent_id, other_names, last_name, phone, email, address, status, user_id) FROM stdin;
-10	Innocentia 	Fordjour 	0244997473			active	52
-11	Alfred 	Acquah 	0244044846			active	53
-\.
-
-
---
--- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.permissions (permission_id, permission_name) FROM stdin;
-70	view attendance
-71	take attendance
-72	view attendance report
-73	view attendance analytics
-74	view classes
-75	add class
-76	delete class
-77	view events
-78	add event
-79	add expense
-80	view feeding fee and tnt
-81	take feeding and tnt
-82	take fees
-83	view finances
-84	add bills
-85	view examinations
-86	record assessment
-87	promote students
-88	view masters sheet
-89	view report cards
-90	add remarks
-91	add grading scheme
-92	add health incident
-93	view health record
-94	send sms
-95	view sms
-97	send notification
-98	view parents
-99	delete parents
-100	view semesters
-101	close semester
-102	add semester
-103	delete semester
-104	view staff
-105	add staff
-106	evaluate staff
-107	delete staff
-108	view students
-109	add student
-110	delete student
-111	view subjects
-112	add subjects
-113	add subject
-114	delete subject
-115	add timetable
-116	add role
-117	delete user
-118	assign roles
-119	assign permissions
-120	delete event
-121	view fees
-122	view student's payment history
-123	view financial report
-124	delete grading scheme
-125	view users
-126	view items
-127	delete item
-128	manage supply
-129	view stock items
-130	delete supply items
-96	view notifications
-\.
-
-
---
--- Data for Name: procurements; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.procurements (procurement_id, item_id, supplier_id, unit_cost, quantity, total_cost, procurement_date, brought_by, received_by, received_at, status) FROM stdin;
-\.
-
-
---
--- Data for Name: role_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.role_permissions (role_id, permission_id) FROM stdin;
-1	84
-1	75
-1	78
-1	79
-1	91
-1	92
-1	90
-1	116
-1	102
-1	105
-1	109
-1	113
-1	112
-1	115
-1	119
-1	118
-1	101
-1	76
-1	120
-1	124
-1	127
-1	99
-1	103
-1	107
-1	110
-1	114
-1	130
-1	117
-1	106
-1	128
-1	87
-1	86
-1	97
-1	94
-1	71
-1	81
-1	82
-1	70
-1	73
-1	72
-1	74
-1	77
-1	85
-1	80
-1	121
-1	83
-1	123
-1	93
-1	126
-1	88
-1	96
-1	98
-1	89
-1	100
-1	95
-1	104
-1	129
-1	122
-1	108
-1	111
-1	125
-2	75
-2	78
-2	79
-2	91
-2	90
-2	102
-2	105
-2	113
-2	112
-2	115
-2	101
-2	76
-2	109
-2	120
-2	124
-2	99
-2	103
-2	107
-2	110
-2	114
-2	106
-2	128
-2	87
-2	97
-2	94
-2	71
-2	81
-2	82
-2	70
-2	73
-2	72
-2	74
-2	77
-2	85
-2	80
-2	121
-2	83
-2	123
-2	126
-2	88
-2	96
-2	98
-2	89
-2	100
-2	95
-2	104
-2	129
-2	122
-2	108
-2	111
-2	125
-3	70
-3	71
-3	72
-3	73
-3	74
-3	77
-3	85
-3	88
-3	89
-3	90
-3	92
-3	98
-3	100
-3	104
-3	108
-3	111
-3	126
-3	129
-3	96
-3	109
-\.
-
-
---
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.roles (role_id, role_name) FROM stdin;
-1	Admin
-2	Head Teacher
-3	Teaching Staff
-4	feeding fee collector
-\.
-
-
---
--- Data for Name: rooms; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.rooms (room_id, room_name) FROM stdin;
-\.
-
-
---
--- Data for Name: semesters; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.semesters (semester_id, semester_name, start_date, end_date, status) FROM stdin;
-9	First Term	2025-01-08	2025-03-28	active
-\.
-
-
---
--- Data for Name: sms_logs; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.sms_logs (id, recipient_type, message_type, sender_id, recipients_id, message_content, total_attempeted, total_invalid_numbers, total_successful, total_failed, successful_recipients_ids, failed_receipients_ids, invalid_recipients_ids, invalid_recippients_phone, api_response, send_timestamp, total_sms_used) FROM stdin;
-\.
-
-
---
--- Data for Name: staff; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.staff (staff_id, user_id, first_name, last_name, middle_name, date_of_birth, gender, marital_status, address, phone_number, email, emergency_contact, date_of_joining, designation, department, salary, account_number, contract_type, employment_status, qualification, experience, blood_group, national_id, passport_number, photo, teaching_subject, class_teacher, subject_in_charge, house_in_charge, bus_in_charge, library_in_charge, status, role) FROM stdin;
-18	54	Obed	Takyi	Godsmal	1999-03-11	M	Single	BOTSIO	0559616009		0243761990	2022-01-11		JHS	0.00		Full-time	Active	HND IN COMPUTERS AND BUSINESS MANAGEMENT	6 YEARS		1234567		\N		\N	\N	\N	\N	\N	active	head teacher
-19	55	Veronica	Aggrey		2002-07-07	F	Single	NSAWAM	0533213998		0540383063	2022-01-01		PRIMARY	0.00		Full-time	Active	WASSCE	3 YEARS		1234567		\N		\N	\N	\N	\N	\N	active	teaching staff
-20	56	Isaac	Mankoe		2004-07-06	M	Single	MUMFORD	0242445132		0556866312	2025-01-08		JHS	0.00		Full-time	Active	WASSCE	0		1234567		\N	INTEGRATED SCIENCE	\N	\N	\N	\N	\N	active	teaching staff
-17	47	Alex	Ankah 	Junior	1992-06-03	M	Single	P.O.Box 74\nApam	0249248800		0249248800	2017-01-01		JHS	0.00		Full-time	Active	Diploma	8 years experience	B+	1234567		\N	Fante	\N	\N	\N	\N	\N	active	teaching staff
-21	57	Isaac	Danquah		1997-01-11	M	Single	BOTSIO	0559276180		0559276180	2024-01-08		JHS	0.00		Full-time	Active	DEGREE	7 YEARS		1234567		\N	MATHEMATICS	\N	\N	\N	\N	\N	active	teaching staff
-\.
-
-
---
--- Data for Name: student_grades; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.student_grades (grade_id, student_id, subject_id, class_id, user_id, gradescheme_id, semester_id, class_score, exams_score, total_score, status, created_at) FROM stdin;
-\.
-
-
---
--- Data for Name: student_parent; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.student_parent (student_id, parent_id, relationship, status) FROM stdin;
-7	10	Mother 	active
-7	11	Father 	active
-\.
-
-
---
--- Data for Name: student_remarks; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.student_remarks (remark_id, student_id, class_id, semester_id, user_id, class_teachers_remark, headteachers_remark, remark_date) FROM stdin;
-\.
-
-
---
--- Data for Name: students; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.students (student_id, photo, first_name, last_name, other_names, date_of_birth, gender, class_id, amountowed, residential_address, phone, email, enrollment_date, national_id, birth_cert_id, role, user_id, status, class_promoted_to) FROM stdin;
-7	\N	Christiana 	Acquah	Nhyira 	2017-06-22	Female	31	0.00	GREATER GRACE CAMPUS	0244997473		2019-01-01	0	1234567	student	51	active	31
-\.
-
-
---
--- Data for Name: subjects; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.subjects (subject_id, subject_name, status) FROM stdin;
-11	English Language	active
-12	Mathematics	active
-13	Integrated Science	active
-14	History	active
-15	Numeracy	active
-16	Social Studies	active
-17	Creative Arts	active
-18	Career Technology	active
-19	Computing	active
-20	Fante	active
-21	Our World Our People	active
-22	Religious & Moral Education	active
-23	Bible Knowledge	active
-24	Music	active
-\.
-
-
---
--- Data for Name: suppliers; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.suppliers (supplier_id, supplier_name, contact_name, contact_phone, contact_email, address, details, status) FROM stdin;
-\.
-
-
---
--- Data for Name: timetable; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.timetable (timetable_id, class_id, subject_id, teacher_id, room_id, day_of_week, period_number, start_time, end_time, semester_id) FROM stdin;
-\.
-
-
---
--- Data for Name: user_health_record; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.user_health_record (user_id, medical_conditions, allergies, blood_group, vaccination_status, last_physical_exam_date, created_at, updated_at, health_insurance_id, status) FROM stdin;
-51	NONE 	NONE 	B+	POLIO	\N	2025-01-11 12:12:25.451746	2025-01-11 12:12:25.451746	1234567	active
-54	NONE	NONE		NONE	\N	2025-01-13 15:37:06.315031	2025-01-13 15:37:06.315031	\N	active
-55	NONE	NONE		NONE	\N	2025-01-13 16:03:02.988544	2025-01-13 16:03:02.988544	\N	active
-56	NONE	NONE		NONE	\N	2025-01-13 16:16:54.040653	2025-01-13 16:16:54.040653	\N	active
-47	None 	None 	B+	Yellow fever \nPolio\nHep. B	\N	2025-01-11 11:08:15.793127	2025-01-11 11:08:15.793127	\N	active
-57	NONE	NONE		NONE	\N	2025-01-13 16:22:15.40596	2025-01-13 16:22:15.40596	\N	active
-\.
-
-
---
--- Data for Name: user_roles; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.user_roles (user_id, role_id) FROM stdin;
-1	1
-47	3
-54	1
-57	3
-55	3
-56	3
-\.
-
-
---
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.users (user_id, user_name, user_email, role, status, password) FROM stdin;
-1	adminadmin	admin@admin	admin	active	$2a$10$dTYFyllq1uXxg0kYtDAkdufYdPmAhb14Nsr2rkoZEphIfIcnIztgC
-51	christiana  acquah nhyira 		student	active	$2a$10$rA6oK1454fP4czac5gU/fek2ur1j.9eTXgaal0DuDEXf9bztagQKC
-52	innocentia  fordjour 		parent	active	$2a$10$ixkilcCne9aXppReBlDfLu6Fd7r/N1Hnz5bQWxS7nKZjEMkzhelT6
-53	alfred  acquah 		parent	active	$2a$10$rxW24lrCNuyG5yrC8xwBd.vXV1GlwVAzcRFkXhzRclXhEWS2R9THS
-54	obed takyi godsmal		head teacher	active	$2a$10$k8mh5q3q9uWCunSE5hYlQu.K0eF8PgnFjjY65n9kl9.DvzPdt5WCm
-55	veronica aggrey 		teaching staff	active	$2a$10$HThc1jaAuMUBr0MoI8mXIuBdvYfKyIG3n.BhzUYzFT/XKpMY0NRjG
-56	isaac mankoe 		teaching staff	active	$2a$10$BflrsAo8m2K3/n4FDXsFK.p2z30pMn7q0jdXbu0n1dwGv67We3zkm
-47	alex ankah  junior		teaching staff	active	$2a$10$H8/8JXGtHSdrHosXD6vsCObxj4a/SlXY29yLD7dfLWvC5hFmujh3K
-57	isaac danquah 		teaching staff	active	$2a$10$A1gCNklruma4PKLIssI0yOt4mLEDd0DnfDhkxmYA3TRCmftsXeiPK
-\.
-
-
---
--- Name: attendance_attendance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.attendance_attendance_id_seq', 30, true);
-
-
---
--- Name: balance_adjustment_log_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.balance_adjustment_log_log_id_seq', 2, true);
-
-
---
--- Name: class_items_class_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.class_items_class_item_id_seq', 15, true);
-
-
---
--- Name: classes_class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.classes_class_id_seq', 48, true);
-
-
---
--- Name: departments_department_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.departments_department_id_seq', 1, true);
-
-
---
--- Name: evaluations_evaluation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.evaluations_evaluation_id_seq', 5, true);
-
-
---
--- Name: events_event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.events_event_id_seq', 5, true);
-
-
---
--- Name: expenses_expense_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.expenses_expense_id_seq', 10, true);
-
-
---
--- Name: fee_collections_collection_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.fee_collections_collection_id_seq', 33, true);
-
-
---
--- Name: feeding_fee_payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.feeding_fee_payments_id_seq', 4, true);
-
-
---
--- Name: grading_scheme_grade_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.grading_scheme_grade_id_seq', 11, true);
-
-
---
--- Name: health_incident_incident_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.health_incident_incident_id_seq', 12, true);
-
-
---
--- Name: inventory_items_inventory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.inventory_items_inventory_id_seq', 3, true);
-
-
---
--- Name: invoices_invoice_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.invoices_invoice_id_seq', 24, true);
-
-
---
--- Name: items_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.items_item_id_seq', 5, true);
-
-
---
--- Name: items_movement_supply_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.items_movement_supply_id_seq', 3, true);
-
-
---
--- Name: items_supply_supply_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.items_supply_supply_id_seq', 20, true);
-
-
---
--- Name: notification_recipients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.notification_recipients_id_seq', 26, true);
-
-
---
--- Name: notifications_notification_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.notifications_notification_id_seq', 131, true);
-
-
---
--- Name: parents_parent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.parents_parent_id_seq', 11, true);
-
-
---
--- Name: permissions_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.permissions_permission_id_seq', 70, true);
-
-
---
--- Name: procurements_procurement_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.procurements_procurement_id_seq', 8, true);
-
-
---
--- Name: roles_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.roles_role_id_seq', 4, true);
-
-
---
--- Name: rooms_room_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.rooms_room_id_seq', 1, false);
-
-
---
--- Name: semesters_semester_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.semesters_semester_id_seq', 9, true);
-
-
---
--- Name: sms_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.sms_logs_id_seq', 76, true);
-
-
---
--- Name: staff_staff_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.staff_staff_id_seq', 21, true);
-
-
---
--- Name: student_grades_grade_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.student_grades_grade_id_seq', 29, true);
-
-
---
--- Name: student_remarks_remark_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.student_remarks_remark_id_seq', 3, true);
-
-
---
--- Name: students_student_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.students_student_id_seq', 7, true);
-
-
---
--- Name: subjects_subject_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.subjects_subject_id_seq', 24, true);
-
-
---
--- Name: suppliers_supplier_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.suppliers_supplier_id_seq', 3, true);
-
-
---
--- Name: timetable_timetable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.timetable_timetable_id_seq', 31, true);
-
-
---
--- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.users_user_id_seq', 57, true);
-
-
---
 -- Name: attendance attendance_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2698,6 +1843,22 @@ ALTER TABLE ONLY public.attendance
 
 ALTER TABLE ONLY public.balance_adjustment_log
     ADD CONSTRAINT balance_adjustment_log_pkey PRIMARY KEY (log_id);
+
+
+--
+-- Name: bus_pick_up_points bus_pick_up_points_pick_up_point_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bus_pick_up_points
+    ADD CONSTRAINT bus_pick_up_points_pick_up_point_name_key UNIQUE (pick_up_point_name);
+
+
+--
+-- Name: bus_pick_up_points bus_pick_up_points_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bus_pick_up_points
+    ADD CONSTRAINT bus_pick_up_points_pkey PRIMARY KEY (pick_up_id);
 
 
 --
@@ -3029,14 +2190,6 @@ ALTER TABLE ONLY public.class_items
 
 
 --
--- Name: classes unique_class_name; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.classes
-    ADD CONSTRAINT unique_class_name UNIQUE (class_name);
-
-
---
 -- Name: staff unique_staff_user_id; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3121,6 +2274,14 @@ ALTER TABLE ONLY public.attendance
 
 ALTER TABLE ONLY public.balance_adjustment_log
     ADD CONSTRAINT balance_adjustment_log_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.students(student_id);
+
+
+--
+-- Name: bus_pick_up_points bus_pick_up_points_student_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bus_pick_up_points
+    ADD CONSTRAINT bus_pick_up_points_student_id_fkey FOREIGN KEY (student_id) REFERENCES public.students(student_id);
 
 
 --
@@ -3273,6 +2434,14 @@ ALTER TABLE ONLY public.feeding_transport_fees
 
 ALTER TABLE ONLY public.departments
     ADD CONSTRAINT fk_head_of_department FOREIGN KEY (head_of_department) REFERENCES public.staff(staff_id);
+
+
+--
+-- Name: feeding_transport_fees fk_pickup_point; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.feeding_transport_fees
+    ADD CONSTRAINT fk_pickup_point FOREIGN KEY (pick_up_point) REFERENCES public.bus_pick_up_points(pick_up_id);
 
 
 --
@@ -3665,6 +2834,146 @@ ALTER TABLE ONLY public.user_roles
 
 REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 13.16 (Debian 13.16-1.pgdg120+1)
+-- Dumped by pg_dump version 15.8 (Debian 15.8-0+deb12u1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.permissions (permission_id, permission_name) FROM stdin;
+70	view attendance
+71	take attendance
+72	view attendance report
+73	view attendance analytics
+74	view classes
+75	add class
+76	delete class
+77	view events
+78	add event
+79	add expense
+80	view feeding fee and tnt
+81	take feeding and tnt
+82	take fees
+83	view finances
+84	add bills
+85	view examinations
+86	record assessment
+87	promote students
+88	view masters sheet
+89	view report cards
+90	add remarks
+91	add grading scheme
+92	add health incident
+93	view health record
+94	send sms
+95	view sms
+96	view notification
+97	send notification
+98	view parents
+99	delete parents
+100	view semesters
+101	close semester
+102	add semester
+103	delete semester
+104	view staff
+105	add staff
+106	evaluate staff
+107	delete staff
+108	view students
+109	add student
+110	delete student
+111	view subjects
+112	add subjects
+113	add subject
+114	delete subject
+115	add timetable
+116	add role
+117	delete user
+118	assign roles
+119	assign permissions
+120	delete event
+121	view fees
+122	view student's payment history
+123	view financial report
+124	delete grading scheme
+125	view users
+126	view items
+127	delete item
+128	manage supply
+129	view stock items
+130	delete supply items
+\.
+
+
+--
+-- Name: permissions_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.permissions_permission_id_seq', 71, true);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 13.16 (Debian 13.16-1.pgdg120+1)
+-- Dumped by pg_dump version 15.8 (Debian 15.8-0+deb12u1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (user_id, user_name, user_email, role, status, password) FROM stdin;
+1	adminadmin	admin@admin	admin	active	$2a$10$dTYFyllq1uXxg0kYtDAkdufYdPmAhb14Nsr2rkoZEphIfIcnIztgC
+47	nelson dorkordi sds	atlcoccus@gmail.com	teaching staff	active	$2a$10$dtIVX5XVMzBrIiA/BPHGJ.5p20dYIhxIISmiSeymlBa/YGlc2vrxq
+48	christiana  acquah  nhyira 		student	active	$2a$10$CeXgRItWQkMeGy/5/vyWnejip3Hn2TcF8c4ZegegAccpJd0n/adIa
+49	innocentia  fordjour 		parent	active	$2a$10$ndNSt5CQipbmxkh.v.DkL.bB5ReaspG5RAgOqLWDrF.jrZpmLKhJK
+50	alfred  acquah 		parent	active	$2a$10$x1g2tXVchNOiW.D8N1ljf.f6aWBKgvY6cOUEXAfZHJ8Dh9vVHOfEO
+\.
+
+
+--
+-- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_user_id_seq', 50, true);
 
 
 --
