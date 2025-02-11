@@ -47,7 +47,7 @@ const GradeAnalyticsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [analytics, setAnalytics] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeSem, setActiveSem] = useState(null);
   const [isAuthorised, setIsAuthorised] = useState(false);
@@ -107,7 +107,7 @@ const GradeAnalyticsPage = () => {
   ];
 
   const fetchAnalytics = async (semester_id) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     setError(null);
     try {
       const data = await fetchData(
