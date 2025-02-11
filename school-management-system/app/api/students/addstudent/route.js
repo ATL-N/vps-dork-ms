@@ -71,7 +71,8 @@ export async function POST(req) {
 
     // Helper function to create a parent
     async function createParent(other_names, last_name, phone, email, address) {
-      const username = ` ${last_name?.trim()} ${other_names?.trim()}`.toLowerCase();
+      const username =
+        ` ${last_name?.trim()} ${other_names?.trim()}`.toLowerCase();
       const user_id = await createUser(username, email, phone, "parent");
 
       const insertParentQuery = `
@@ -147,12 +148,25 @@ export async function POST(req) {
       (student_id, transportation_method, pick_up_point, feeding_fee, transport_fee)
       VALUES ($1, $2, $3, $4, $5);
     `;
+
+    // Sanitize all relevant fields
+    const sanitizedPickUpPoint =
+      pick_up_point === "" || pick_up_point === undefined
+        ? null
+        : pick_up_point;
+    const sanitizedFeedingFee =
+      feeding_fee === "" || feeding_fee === undefined ? null : feeding_fee;
+    const sanitizedTransportFee =
+      transport_fee === "" || transport_fee === undefined
+        ? null
+        : transport_fee;
+
     await db.query(insertFeedingTransportQuery, [
       student_id,
       transportation_method,
-      pick_up_point,
-      feeding_fee,
-      transport_fee,
+      sanitizedPickUpPoint,
+      sanitizedFeedingFee,
+      sanitizedTransportFee,
     ]);
 
     // Step 4: Handle parent1
@@ -169,7 +183,7 @@ export async function POST(req) {
 
     // Step 5: Handle parent2
     let parent2_id = parent2_selection;
-    if (!parent2_id && parent2_last_name!='' && parent2_relationship!='') {
+    if (!parent2_id && parent2_last_name != "" && parent2_relationship != "") {
       parent2_id = await createParent(
         parent2_other_names,
         parent2_last_name,
@@ -193,15 +207,13 @@ export async function POST(req) {
     ]);
 
     // Link parent2
-    if(parent2_relationship!=''){
-
-    
-    await db.query(insertParentStudentQuery, [
-      student_id,
-      parent2_id,
-      parent2_relationship,
-    ]);
-  }
+    if (parent2_relationship != "") {
+      await db.query(insertParentStudentQuery, [
+        student_id,
+        parent2_id,
+        parent2_relationship,
+      ]);
+    }
 
     // After all the student-related insertions are complete, add the notification
     const notification_title = "New Student Registration";
