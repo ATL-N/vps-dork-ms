@@ -74,6 +74,10 @@ export async function GET(req, { params }) {
 // import db from "../../../lib/db";
 
 // PUT /api/students/[id]
+// import { NextResponse } from "next/server";
+// import bcrypt from "bcryptjs";
+// import db from "../../../lib/db";
+
 export async function PUT(req, { params }) {
   const { id } = params;
   const body = await req.json();
@@ -156,6 +160,25 @@ export async function PUT(req, { params }) {
 
     const student = studentResult.rows[0];
 
+    // Sanitize the feeding and transport related fields
+    const sanitizedPickUpPoint =
+      body.pick_up_point === "" || body.pick_up_point === undefined
+        ? null
+        : body.pick_up_point;
+    const sanitizedFeedingFee =
+      body.feeding_fee === "" || body.feeding_fee === undefined
+        ? null
+        : body.feeding_fee;
+    const sanitizedTransportFee =
+      body.transport_fee === "" || body.transport_fee === undefined
+        ? null
+        : body.transport_fee;
+    const sanitizedTransportMethod =
+      body.transportation_method === "" ||
+      body.transportation_method === undefined
+        ? null
+        : body.transportation_method;
+
     // Check if feeding transport record exists
     const checkFeedingTransportQuery = `
       SELECT * FROM feeding_transport_fees WHERE student_id = $1;
@@ -176,10 +199,10 @@ export async function PUT(req, { params }) {
       `;
       await db.query(updateFeedingTransportQuery, [
         id,
-        body.transportation_method,
-        body.pick_up_point,
-        body.feeding_fee,
-        body.transport_fee,
+        sanitizedTransportMethod,
+        sanitizedPickUpPoint,
+        sanitizedFeedingFee,
+        sanitizedTransportFee,
       ]);
     } else {
       // Insert new record
@@ -190,10 +213,10 @@ export async function PUT(req, { params }) {
       `;
       await db.query(insertFeedingTransportQuery, [
         id,
-        body.transportation_method,
-        body.pick_up_point,
-        body.feeding_fee,
-        body.transport_fee,
+        sanitizedTransportMethod,
+        sanitizedPickUpPoint,
+        sanitizedFeedingFee,
+        sanitizedTransportFee,
       ]);
     }
 
