@@ -53,7 +53,7 @@ services:
       - --api
     networks:
       - traefik-public # Public network for Traefik and other services
-      - web
+      # - web
 volumes:
   traefik-public-certificates: # Persistent volume for certificates
 
@@ -61,5 +61,5 @@ networks:
   traefik-public:
     name: traefik-public
     # external: false # Use pre-existing traefik-public network
-  web:
-    name: web
+  # web:
+  #   name: web
