@@ -39,52 +39,23 @@ function createPool() {
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT || "5432"),
-    ssl: sslConfig, // Fixed: You were setting ssl: false regardless of config
+    ssl: false,
     // Additional recommended configurations
-    max: parseInt(process.env.DB_POOL_MAX || "20"), // Reduced max connections
+    max: parseInt(process.env.DB_POOL_MAX || "40"), // Maximum number of clients
     idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-    connectionTimeoutMillis: 5000, // Increased from 2000ms
+    connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
   });
 }
 
-async function getPoolWithRetry(maxRetries = 5, initialDelay = 500) {
-  if (pool) return pool;
-
-  let retries = 0;
-  let lastError;
-
-  while (retries < maxRetries) {
-    try {
-      pool = createPool();
-      // Test the connection
-      const client = await pool.connect();
-      client.release();
-      console.log("Database connection established successfully");
-      return pool;
-    } catch (error) {
-      lastError = error;
-      retries++;
-      // Don't log during tests
-      if (process.env.NODE_ENV !== "test") {
-        console.warn(
-          `Database connection attempt ${retries} failed: ${error.message}`
-        );
-      }
-
-      // Exponential backoff
-      const delay = initialDelay * Math.pow(2, retries - 1);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
+function getPool() {
+  if (!pool) {
+    pool = createPool();
   }
-
-  // If we got here, all retries failed
-  console.error(`Failed to connect to database after ${maxRetries} attempts`);
-  throw lastError;
+  return pool;
 }
 
 async function query(text, params) {
-  const pool = await getPoolWithRetry();
-  const client = await pool.connect();
+  const client = await getPool().connect();
   try {
     const result = await client.query(text, params);
     return result;
@@ -103,6 +74,6 @@ async function closePool() {
 
 export default {
   query,
-  getPool: getPoolWithRetry,
+  getPool,
   closePool,
 };
