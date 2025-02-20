@@ -68,16 +68,6 @@ export async function GET(req, { params }) {
   }
 }
 
-// // PUT /api/students/[id]
-// import { NextResponse } from "next/server";
-// import bcrypt from "bcryptjs";
-// import db from "../../../lib/db";
-
-// PUT /api/students/[id]
-// import { NextResponse } from "next/server";
-// import bcrypt from "bcryptjs";
-// import db from "../../../lib/db";
-
 export async function PUT(req, { params }) {
   const { id } = params;
   const body = await req.json();
@@ -237,9 +227,26 @@ export async function PUT(req, { params }) {
       student.user_id,
     ]);
 
-    // Update parents
+    // First, remove all existing parent relationships for this student
+    // This ensures we don't accumulate parents over time
+    const deleteRelationshipsQuery = `
+      DELETE FROM student_parent
+      WHERE student_id = $1;
+    `;
+    await db.query(deleteRelationshipsQuery, [id]);
+
+    // Update parents (maximum of 2)
     for (let i = 1; i <= 2; i++) {
       const parentPrefix = `parent${i}`;
+
+      // Skip this parent if required information is missing
+      if (
+        !body[`${parentPrefix}_other_names`] ||
+        !body[`${parentPrefix}_last_name`]
+      ) {
+        continue;
+      }
+
       const parentId = body[`${parentPrefix}_selection`];
 
       // Get or create parent user - now checks based on parent_id
@@ -250,6 +257,8 @@ export async function PUT(req, { params }) {
         body[`${parentPrefix}_phone`],
         body[`${parentPrefix}_email`]
       );
+
+      let currentParentId;
 
       if (parentId) {
         // Update existing parent
@@ -262,9 +271,10 @@ export async function PUT(req, { params }) {
             phone = $4, 
             email = $5, 
             address = $6
-          WHERE parent_id = $7;
+          WHERE parent_id = $7
+          RETURNING parent_id;
         `;
-        await db.query(updateParentQuery, [
+        const parentResult = await db.query(updateParentQuery, [
           parentUserId,
           body[`${parentPrefix}_other_names`],
           body[`${parentPrefix}_last_name`],
@@ -274,17 +284,7 @@ export async function PUT(req, { params }) {
           parentId,
         ]);
 
-        // Update relationship
-        const updateRelationshipQuery = `
-          UPDATE student_parent
-          SET relationship = $1
-          WHERE student_id = $2 AND parent_id = $3;
-        `;
-        await db.query(updateRelationshipQuery, [
-          body[`${parentPrefix}_relationship`],
-          id,
-          parentId,
-        ]);
+        currentParentId = parentId;
       } else {
         // Insert new parent
         const insertParentQuery = `
@@ -301,19 +301,20 @@ export async function PUT(req, { params }) {
           body[`${parentPrefix}_email`],
           body[`${parentPrefix}_address`],
         ]);
-        const newParentId = parentResult.rows[0].parent_id;
 
-        // Link new parent to student
-        const insertRelationshipQuery = `
-          INSERT INTO student_parent (student_id, parent_id, relationship)
-          VALUES ($1, $2, $3);
-        `;
-        await db.query(insertRelationshipQuery, [
-          id,
-          newParentId,
-          body[`${parentPrefix}_relationship`],
-        ]);
+        currentParentId = parentResult.rows[0].parent_id;
       }
+
+      // Link parent to student - always create a new relationship
+      const insertRelationshipQuery = `
+        INSERT INTO student_parent (student_id, parent_id, relationship)
+        VALUES ($1, $2, $3);
+      `;
+      await db.query(insertRelationshipQuery, [
+        id,
+        currentParentId,
+        body[`${parentPrefix}_relationship`] || "Parent",
+      ]);
     }
 
     await db.query("COMMIT");

@@ -356,16 +356,19 @@ const StudentManagement = () => {
 
   const handleViewProfile = async (student_id) => {
     try {
-      const [parentsData, classesData, studentsData] = await Promise.all([
-        fetchData("/api/parents/getallparents", "", false),
-        fetchData("/api/classes/all", "", false),
-        fetchData(`/api/students/${student_id}`, "", true),
-      ]);
+      const [parentsData, classesData, studentsData, pickupData] =
+        await Promise.all([
+          fetchData("/api/parents/getallparents", "", false),
+          fetchData("/api/classes/all", "", false),
+          fetchData(`/api/students/${student_id}`, "", false),
+          fetchData("/api/feedingNtransport/pickup/get", "", true),
+        ]);
       setModalContent(
         <div>
           <Addnewstudent
             classesData={classesData?.classes}
             parentsData={parentsData}
+            pickupData={pickupData}
             id={student_id}
             studentsData={studentsData}
             details={true}

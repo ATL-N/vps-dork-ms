@@ -51,9 +51,11 @@ const Addeditstudent = ({
     const authorizedRoles = ["admin"];
     const authorizedPermissions = ["add student"];
 
+    console.log("pickupData", pickupData);
+
     if (
       session?.user?.roles?.some((role) => authorizedRoles.includes(role)) ||
-      authorizedRoles.includes(session?.user?.role) 
+      authorizedRoles.includes(session?.user?.role)
     ) {
       setIsAuthorised(true);
     } else {
@@ -171,7 +173,7 @@ const Addeditstudent = ({
               value={formData?.date_of_birth}
               onChange={handleChange}
               isReadOnly={isDetails}
-              // max={get20YearsAgoString()}
+              max={getTodayString()}
             />
 
             <SelectField
@@ -184,8 +186,8 @@ const Addeditstudent = ({
               isDisAbled={isDetails}
               options={[
                 { value: "", label: "Select Gender" },
-                { value: "Male", label: "Male" },
-                { value: "Female", label: "Female" },
+                { value: "male", label: "Male" },
+                { value: "female", label: "Female" },
               ]}
             />
             <SelectField
@@ -292,28 +294,29 @@ const Addeditstudent = ({
               label="Mode of Transportation"
               name="transportation_method"
               icon={<FaBus />}
-              value={formData?.transportation_method}
+              value={formData?.transportation_method?.toLowerCase() || ""}
               onChange={handleChange}
               isReadOnly={isDetails}
               isDisAbled={isDetails}
               isRequired={false}
               options={[
                 { value: "", label: "Choose how the student gets to school" },
-                { value: "School Bus", label: "School Bus" },
+                { value: "school bus", label: "School Bus" },
                 {
-                  value: "By self",
-                  label: "By self(foot, commecial transport)",
+                  value: "by self",
+                  label: "by self(foot, commecial transport)",
                 },
-                { value: "Parent Drop-off", label: "Parent Drop-off" },
+                { value: "parent drop-off", label: "Parent Drop-off" },
               ]}
             />
-            {formData?.transportation_method === "School Bus" && (
+            {formData?.transportation_method?.toLowerCase() ===
+              "school bus".toLowerCase() && (
               <>
                 <SelectField
                   label="Pick Up Point"
                   name="pick_up_point"
                   icon={<FaLocationPin className="text-gray-400" />}
-                  value={formData?.pick_up_point}
+                  value={formData?.pick_up_point || ""}
                   onChange={handleChange}
                   isReadOnly={isDetails}
                   placeholder="Type pick up point"
