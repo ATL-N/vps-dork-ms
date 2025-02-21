@@ -39,7 +39,7 @@ function createPool() {
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT || "5432"),
-    ssl: sslConfig, // This should be false for your Docker setup
+    ssl: false, // This should be false for your Docker setup
     max: parseInt(process.env.DB_POOL_MAX || "20"),
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
