@@ -28,7 +28,7 @@ services:
       - traefik.http.routers.dorkms-https.service=dorkms-service
       - traefik.http.services.dorkms-service.loadbalancer.server.port=3000
     depends_on:
-      db:
+      epinalannexdb:
         condition: service_healthy
     restart: always
     networks:
