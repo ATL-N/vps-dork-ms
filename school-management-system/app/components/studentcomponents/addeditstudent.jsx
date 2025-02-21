@@ -468,7 +468,7 @@ const Addeditstudent = ({
                 ]}
               />
 
-              {formData[`parent${parentIndex}_selection`] && !id ? (
+              {formData[`parent${parentIndex}_selection`] ? (
                 <>
                   <p className="mt-2 text-sm text-red-500">
                     <h1>
