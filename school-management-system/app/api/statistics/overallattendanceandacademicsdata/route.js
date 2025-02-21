@@ -9,8 +9,8 @@ export async function GET(req) {
     const studentCountQuery = `
       SELECT 
         COUNT(*) AS total_students,
-        COUNT(*) FILTER (WHERE gender = 'Male') AS male_count,
-        COUNT(*) FILTER (WHERE gender = 'Female') AS female_count
+        COUNT(*) FILTER (WHERE gender = 'male') AS male_count,
+        COUNT(*) FILTER (WHERE gender = 'female') AS female_count
       FROM students
       WHERE status = 'active'
     `;

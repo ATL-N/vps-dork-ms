@@ -32,7 +32,6 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import Link from "next/link";
 import StatCard from "../../components/statcard";
 import Modal from "../../components/modal/modal";
 import DeleteUser from "../../components/deleteuser";
