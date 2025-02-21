@@ -21,16 +21,16 @@ function createPool() {
   const environment = process.env.NODE_ENV || "development";
   const isDocker = process.env.DOCKER === "true";
 
-  // Default SSL configuration based on environment
+  // Always use SSL_CONFIGS.DISABLE for Docker environments
   let sslConfig = SSL_CONFIGS.DISABLE;
 
-  if (environment === "production") {
-    sslConfig = SSL_CONFIGS.REQUIRE;
-  } else if (environment === "staging") {
-    sslConfig = SSL_CONFIGS.ALLOW;
-  } else if (isDocker && process.env.DB_SSL_CA) {
-    // Custom SSL configuration for Docker with CA certificate
-    sslConfig = SSL_CONFIGS.CUSTOM(process.env.DB_SSL_CA);
+  // Only configure SSL for non-Docker environments
+  if (!isDocker) {
+    if (environment === "production") {
+      sslConfig = SSL_CONFIGS.REQUIRE;
+    } else if (environment === "staging") {
+      sslConfig = SSL_CONFIGS.ALLOW;
+    }
   }
 
   return new Pool({
@@ -39,11 +39,10 @@ function createPool() {
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT || "5432"),
-    ssl: sslConfig, // Fixed: You were setting ssl: false regardless of config
-    // Additional recommended configurations
-    max: parseInt(process.env.DB_POOL_MAX || "20"), // Reduced max connections
-    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-    connectionTimeoutMillis: 5000, // Increased from 2000ms
+    ssl: sslConfig, // This should be false for your Docker setup
+    max: parseInt(process.env.DB_POOL_MAX || "20"),
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
   });
 }
 
