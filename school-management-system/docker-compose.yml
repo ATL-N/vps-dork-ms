@@ -41,7 +41,7 @@ services:
       retries: 3
       start_period: 40s
 
-  db:
+  epinalannexdb:
     image: postgres:15-alpine
     ports:
       - "5434:5432"
@@ -72,9 +72,5 @@ volumes:
     driver: local
 
 networks:
-  # web:
-  #   external: true
-  # app-network:
-  #   driver: bridge
   traefik-public:
     external: true
